@@ -150,8 +150,17 @@ export default {
       type: String,
       default: 'hover',
       validator: (val) => ['hover', 'click'].includes(val)
+    },
+
+    align: {
+      type: String,
+      default: 'center',
+      validator: (val) => ['left', 'center', 'right'].includes(val)
     }
   },
+  data: () => ({
+    internalHandler: null
+  }),
   computed: {
     /**
      * Menu items that have dropdown content
@@ -191,7 +200,7 @@ export default {
   },
   watch: {
     handler (val) {
-      this.handler = val
+      this.internalHandler = val
       this.registerDropdownElsEvents(true)
       this.registerDropdownContainerEvents(true)
     }
@@ -235,7 +244,7 @@ export default {
           })
         }
 
-        if (this.handler === 'hover') {
+        if (this.internalHandler === 'hover') {
           el._vsmMenuHandlers = {
             focusin: () => {
               this.stopCloseTimeout()
@@ -284,7 +293,7 @@ export default {
         })
       }
 
-      if (this.handler === 'hover') {
+      if (this.internalHandler === 'hover') {
         el._vsmMenuHandlers = {
           [this._pointerEvent.enter]: (evt) => {
             if (evt.pointerType !== 'touch') {
@@ -367,33 +376,41 @@ export default {
       const rect = el.getBoundingClientRect()
 
       // Find the beginning of a menu item
-      const leftPosition = rect.left - rootRect.left
+      const startPosition = rect.left - rootRect.left
 
-      // Step back from the button to the left so that
-      // the middle of the content is found in the
-      // center of the element
-      let centerPosition = leftPosition - (offsetWidth / 2) + (rect.width / 2)
+      let position = null
+
+      switch (this.align) {
+        case 'left':
+          position = startPosition
+          break
+        case 'right':
+          position = rect.right - offsetWidth
+          break
+        default:
+          position = startPosition - (offsetWidth / 2) + (rect.width / 2)
+      }
 
       // Do not let go of the left side of the screen
-      if (centerPosition + rootRect.left < +this.screenOffset) {
-        centerPosition = +this.screenOffset - rootRect.left
+      if (position + rootRect.left < +this.screenOffset) {
+        position = +this.screenOffset - rootRect.left
       }
 
       // Now also check the right side of the screen
-      const rightOffset = centerPosition + rootRect.left + offsetWidth
+      const rightOffset = position + rootRect.left + offsetWidth
       if (rightOffset > bodyWidth - +this.screenOffset) {
-        centerPosition -= (rightOffset - bodyWidth + +this.screenOffset)
+        position -= (rightOffset - bodyWidth + +this.screenOffset)
 
         // Recheck the left side of the screen
-        if (centerPosition < +this.screenOffset - rootRect.left) {
+        if (position < +this.screenOffset - rootRect.left) {
           // Just set the menu to the full width of the screen
-          centerPosition = +this.screenOffset - rootRect.left
+          position = +this.screenOffset - rootRect.left
           offsetWidth = bodyWidth - +this.screenOffset * 2
         }
       }
 
       // Possible blurring font with decimal values
-      centerPosition = Math.round(centerPosition)
+      position = Math.round(position)
 
       const ratioWidth = offsetWidth / +this.baseWidth
       const ratioHeight = offsetHeight / +this.baseHeight
@@ -404,12 +421,12 @@ export default {
         this.$el.classList.remove('vsm-no-transition')
       }, 50)
 
-      this.$refs.dropdownContainer.style.transform = `translate(${centerPosition}px, ${el.offsetTop}px)`
+      this.$refs.dropdownContainer.style.transform = `translate(${position}px, ${el.offsetTop}px)`
       this.$refs.dropdownContainer.style.width = `${offsetWidth}px`
       this.$refs.dropdownContainer.style.height = `${offsetHeight}px`
 
-      this.$refs.arrow.style.transform = `translate(${leftPosition + (rect.width / 2)}px, ${el.offsetTop}px) rotate(45deg)`
-      this.$refs.background.style.transform = `translate(${centerPosition}px, ${el.offsetTop}px) scaleX(${ratioWidth}) scaleY(${ratioHeight})`
+      this.$refs.arrow.style.transform = `translate(${startPosition + (rect.width / 2)}px, ${el.offsetTop}px) rotate(45deg)`
+      this.$refs.background.style.transform = `translate(${position}px, ${el.offsetTop}px) scaleX(${ratioWidth}) scaleY(${ratioHeight})`
       this.$refs.backgroundAlt.style.transform = `translateY(${content.children[0].offsetHeight / ratioHeight}px)`
     },
     closeDropdown () {
