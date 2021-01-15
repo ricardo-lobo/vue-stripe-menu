@@ -158,9 +158,6 @@ export default {
       validator: (val) => ['left', 'center', 'right'].includes(val)
     }
   },
-  data: () => ({
-    internalHandler: null
-  }),
   computed: {
     /**
      * Menu items that have dropdown content
@@ -200,7 +197,6 @@ export default {
   },
   watch: {
     handler (val) {
-      this.internalHandler = val
       this.registerDropdownElsEvents(true)
       this.registerDropdownContainerEvents(true)
     }
@@ -244,7 +240,7 @@ export default {
           })
         }
 
-        if (this.internalHandler === 'hover') {
+        if (this.handler === 'hover') {
           el._vsmMenuHandlers = {
             focusin: () => {
               this.stopCloseTimeout()
@@ -293,7 +289,7 @@ export default {
         })
       }
 
-      if (this.internalHandler === 'hover') {
+      if (this.handler === 'hover') {
         el._vsmMenuHandlers = {
           [this._pointerEvent.enter]: (evt) => {
             if (evt.pointerType !== 'touch') {
