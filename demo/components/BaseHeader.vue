@@ -4,6 +4,7 @@
     :menu="menu"
     :handler="handler"
     :screen-offset="15"
+    :align="align"
     @open-dropdown="onOpenDropdown"
     @close-dropdown="onCloseDropdown"
   >
@@ -31,6 +32,27 @@
       >
         on {{ handler }}
       </li>
+      <li
+        class="vsm-section vsm-mob-hide rnd--open"
+      >
+        <div style="margin-left: 10px;">
+          <label for="align" style="display: block;">Align</label>
+          <select
+            id="align"
+            v-model="align"
+          >
+            <option value="center">
+              Center
+            </option>
+            <option value="left">
+              Left
+            </option>
+            <option value="right">
+              Right
+            </option>
+          </select>
+        </div>
+      </li>
       <!--Display mobile menu-->
       <vsm-mob>
         <mobile-content />
@@ -56,6 +78,7 @@ export default {
   data () {
     return {
       handler: 'hover',
+      align: 'center',
       menu: [
         { title: 'Company', dropdown: 'company', content: DefaultContent, listeners: { mouseover: this.onMouseOver } },
         { title: 'Developers', dropdown: 'developers', content: HorizontalPrimaryContent, secondary: HorizontalSecondaryContent },

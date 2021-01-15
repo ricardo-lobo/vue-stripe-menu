@@ -1,6 +1,6 @@
 {
   "name": "vue-stripe-menu",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Creating menus with animations like on Stripe",
   "main": "./dist/vue-stripe-menu.common.js",
   "scripts": {
@@ -37,7 +37,7 @@
     "babel-jest": "^26.3.0",
     "babel-polyfill": "^6.26.0",
     "dotenv": "^8.2.0",
-    "eslint": "^7.9.0",
+    "eslint": "^6.8.0",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
